@@ -2,31 +2,46 @@ name: Build Java Project
 
 on:
   push:
-    branches: [ main ]   # (a) Executa quando há push na branch principal
+    branches: [ main ]   # Executa o workflow quando há push na branch principal
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Faz checkout do código-fonte
+      # 1️⃣ Faz checkout do código
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Configura o ambiente Java (b)
+      # 2️⃣ Configura o ambiente Java
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'   # ou 'zulu', 'corretto', etc.
+          distribution: 'temurin'
           java-version: '21'
 
-      # 3️⃣ Executa o build com Maven (c)
+      # 3️⃣ Executa o build com Maven
       - name: Build with Maven
         run: mvn clean package
 
-      # 4️⃣ Publica o ficheiro JAR como artefacto (d)
+      # 4️⃣ Copia o .jar para a raiz do repositório
+      - name: Copy JAR to root folder
+        run: cp target/*.jar ./
+
+      # 5️⃣ Publica o artefacto (continua a aparecer no separador “Actions”)
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-jar
           path: target/*.jar
+
+      # 6️⃣ (Opcional) Commita o .jar na raiz do repositório
+      # ⚠️ Usa apenas se quiser realmente guardar o .jar no repositório Git.
+      #     É opcional, e não recomendado para projetos grandes.
+      # - name: Commit JAR to repo
+      #   run: |
+      #     git config user.name "github-actions"
+      #     git config user.email "actions@github.com"
+      #     git add *.jar
+      #     git commit -m "Add built JAR [skip ci]" || echo "No changes to commit"
+      #     git push
