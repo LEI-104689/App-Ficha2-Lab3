@@ -84,3 +84,58 @@ The [Getting Started](https://vaadin.com/docs/latest/getting-started) guide will
 App implementation. You'll learn how to set up your development environment, understand the project 
 structure, and find resources to help you add muscles to your skeleton — transforming it into a fully-featured 
 application.
+
+
+
+
+## Continuous Integration (CI/CD) Pipeline
+
+Este projeto inclui uma pipeline de **Integração Contínua (CI)** configurada com o **GitHub Actions**, que automatiza o processo de build da aplicação e a criação de um ficheiro `.jar` executável.
+
+### Funcionalidade
+
+A pipeline:
+1. É **desencadeada automaticamente** sempre que é feito um `push` para a branch principal (`main`);
+2. **Configura o ambiente Java** (versão 21 ou superior);
+3. **Executa o comando Maven** `mvn clean package` para gerar o ficheiro `.jar`;
+4. **Publica o artefacto gerado** no separador *Actions* do GitHub;
+5. (Opcional) **Copia o `.jar` para a raiz do repositório**, tornando-o acessível pela interface web do GitHub.
+
+### Ficheiro de Workflow
+
+O ficheiro da pipeline encontra-se em `.github/workflows/build.yml`.  
+Segue um excerto do seu conteúdo:
+
+```yaml
+name: Build Java Project
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Copy JAR to root folder
+        run: cp target/*.jar ./
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/*.jar
+
