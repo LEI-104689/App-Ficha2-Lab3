@@ -27,7 +27,7 @@ public class Task {
     @Nullable
     private LocalDate dueDate;
 
-    protected Task() { // To keep Hibernate happy
+    public Task() { // Originalmente 'Protected'
     }
 
     public Task(String description, Instant creationDate) {
@@ -73,6 +73,10 @@ public class Task {
 
         Task other = (Task) obj;
         return getId() != null && getId().equals(other.getId());
+    }
+
+    public void setName(String name) {
+        this.description = name;
     }
 
     @Override
