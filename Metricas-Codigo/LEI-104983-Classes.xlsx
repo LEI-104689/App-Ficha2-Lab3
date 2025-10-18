@@ -1,0 +1,23 @@
+Class Name,ATFD,CCC,CBO,DAC,DIT,CHD,CHEF,CHER,CHL,CHVC,CHVL,LCOM,CLOC,CMI,MPC,NCSS,NOAC,NOAM,NOA,SIZE2,NOC,NOM,NOO,NOOM,NOPA,RFC,TCC,WOC,WMC,,,,,,,
+com.example.controller.CurrencyConversionController,0,0,2,1,1,4,2,225,8526,0,124,15,12,53,7744,1,8,68,1334,1,2,0,1,1,16,0,2,15,0,0,3,0,0,1,0,2
+com.example.examplefeature.CurrencyConversionDTO,0,0,3,3,1,5,25,861,4694,0,302,42,15,164,894,4,25,53,7015,0,8,8,8,4,26,0,9,22,0,0,9,0,1429,0,0,9
+com.example.service.CurrencyConversionService,1,8,2,1,1,29,0,18167,5731,0,2304,111,50,626,468,1,30,47,874,20,34,0,1,1,15,0,1,14,0,0,12,0,0,1,0,11
+com.example.view.CurrencyConversionView,3,6,1,1,3,39,4904,51913,284,0,4639,203,89,1314,5739,1,75,36,9993,54,52,0,1,8,156,0,2,155,0,0,32,0,0,1,0,7
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"
+",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Em relação à classe CurrencyConversionDTO              ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"LCOM (coesão fraca): indica que os métodos não trabalham todos sobre os mesmos dados → a classe pode ter mais do que uma responsabilidade.
+NOA (4 atributos): está no limite → pode estar a guardar demasiada informação.
+NOO (22 operações): muitos métodos → sinal de classe sobrecarregada.
+NOAM (8 métodos adicionados): reforça a ideia de crescimento excessivo de funções.
+NOAC (8 métodos de acesso): possivelmente demasiados getters/setters → quebra de encapsulamento.
+WOC (0.0): a classe não tem comportamentos próprios → parece um “contentor” de dados.
+TCC (0.14): coesão interna baixa → métodos pouco relacionados.",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Em relação à classe CurrencyConversionService apenas o Tcc está um pouco alto             ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Na view o DIT NOA TCC não estão ideais mas não estão muito altos.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+No controler só o tcc não está ideal.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
