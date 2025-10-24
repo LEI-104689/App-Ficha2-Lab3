@@ -10,12 +10,16 @@ import java.time.LocalDate;
 @Table(name = "task")
 public class Task {
 
+    public static final int TITLE_MAX_LENGTH = 100;
     public static final int DESCRIPTION_MAX_LENGTH = 300;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "task_id")
     private Long id;
+
+    @Column(name = "title", nullable = false, length = TITLE_MAX_LENGTH)
+    private String title = "";
 
     @Column(name = "description", nullable = false, length = DESCRIPTION_MAX_LENGTH)
     private String description = "";
@@ -30,7 +34,8 @@ public class Task {
     public Task() { // Originalmente 'Protected'
     }
 
-    public Task(String description, Instant creationDate) {
+    public Task(String title, String description, Instant creationDate) {
+        setTitle(title);
         setDescription(description);
         this.creationDate = creationDate;
     }
@@ -77,6 +82,17 @@ public class Task {
 
     public void setName(String name) {
         this.description = name;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        if (title.length() > TITLE_MAX_LENGTH) {
+            throw new IllegalArgumentException("Title length exceeds " + TITLE_MAX_LENGTH);
+        }
+        this.title = title;
     }
 
     @Override

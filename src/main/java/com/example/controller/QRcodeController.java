@@ -1,50 +1,49 @@
 package com.example.controller;
 
-import com.example.examplefeature.TaskService;
-import com.example.service.QRcodeService;
 import com.example.examplefeature.Task;
-import com.example.service.RelatorioPdfService;
-import com.google.zxing.*;
-import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
-import com.google.zxing.common.HybridBinarizer;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.service.QRcodeService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/qrcode")
 public class QRcodeController {
 
-    private final QRcodeService qrService;
-    private final TaskService taskService;
+    private final QRcodeService qrCodeService;
 
-    public QRcodeController(QRcodeService qrService, TaskService taskService) {
-        this.qrService = qrService;
-        this.taskService = taskService;
+    public QRcodeController(QRcodeService qrCodeService) {
+        this.qrCodeService = qrCodeService;
     }
 
+    // Generate QR code for a given task ID
+    @GetMapping("/generate/{taskId}")
+    public ResponseEntity<byte[]> generateQRCode(@PathVariable Long taskId) {
+        byte[] qrBytes = qrCodeService.generateQRCodeForTaskId(taskId);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "image/png")
+                .body(qrBytes);
+    }
 
-    @PostMapping("/read")
-    public ResponseEntity<String> readQRCodeAndCreateTask(@RequestParam("file") MultipartFile file) {
-        try {
-            BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
-            LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
-            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-            Result result = new MultiFormatReader().decode(bitmap);
+    // Get tasks for a given date
+    @GetMapping("/tasks")
+    public List<Task> getTasksByDate(@RequestParam LocalDate date) {
+        return qrCodeService.getTasksByDate(date);
+    }
 
-            String qrData = result.getText();
-            Task newTask = new Task();
-            newTask.setName(qrData);
-//            taskService.createTask(newTask);
+    // Import task from a scanned QR payload
+    @PostMapping("/import")
+    public ResponseEntity<Task> importTask(@RequestBody String qrPayload) {
+        Task task = qrCodeService.importTaskFromPayload(qrPayload);
+        return ResponseEntity.ok(task);
+    }
 
-            return ResponseEntity.ok("Task created: " + qrData);
-        } catch (IOException | NotFoundException e) {
-            return ResponseEntity.badRequest().body("Could not read QR code");
-        }
+    // Optional: handle invalid requests
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

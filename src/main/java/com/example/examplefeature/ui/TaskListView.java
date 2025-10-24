@@ -30,6 +30,7 @@ class TaskListView extends Main {
 
     private final TaskService taskService;
 
+    final TextField title;
     final TextField description;
     final DatePicker dueDate;
     final Button createBtn;
@@ -37,6 +38,12 @@ class TaskListView extends Main {
 
     TaskListView(TaskService taskService) {
         this.taskService = taskService;
+
+        title = new TextField();
+        title.setPlaceholder("Task title");
+        title.setAriaLabel("Task title");
+        title.setMaxLength(Task.TITLE_MAX_LENGTH);
+        title.setMinWidth("15em");
 
         description = new TextField();
         description.setPlaceholder("What do you want to do?");
@@ -57,6 +64,7 @@ class TaskListView extends Main {
 
         taskGrid = new Grid<>();
         taskGrid.setItems(query -> taskService.list(toSpringPageRequest(query)).stream());
+        taskGrid.addColumn(Task::getTitle).setHeader("Title");
         taskGrid.addColumn(Task::getDescription).setHeader("Description");
         taskGrid.addColumn(task -> Optional.ofNullable(task.getDueDate()).map(dateFormatter::format).orElse("Never"))
                 .setHeader("Due Date");
@@ -67,12 +75,21 @@ class TaskListView extends Main {
         addClassNames(LumoUtility.BoxSizing.BORDER, LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN,
                 LumoUtility.Padding.MEDIUM, LumoUtility.Gap.SMALL);
 
-        add(new ViewToolbar("Task List", ViewToolbar.group(description, dueDate, createBtn)));
+        add(new ViewToolbar("Task List", ViewToolbar.group(title, description, dueDate, createBtn)));
         add(taskGrid);
     }
 
     private void createTask() {
-        taskService.createTask(description.getValue(), dueDate.getValue());
+        String taskTitle = title.getValue().trim();
+        String taskDescription = description.getValue().trim();
+
+        if (taskTitle.isEmpty()) {
+            Notification.show("Title is required", 3000, Notification.Position.BOTTOM_END)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            return;
+        }
+
+        taskService.createTask(taskTitle, taskDescription, dueDate.getValue());
         taskGrid.getDataProvider().refreshAll();
         description.clear();
         dueDate.clear();

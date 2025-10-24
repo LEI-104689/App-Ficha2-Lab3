@@ -23,15 +23,22 @@ class TaskServiceTest {
     public void tasks_are_stored_in_the_database_with_the_current_timestamp() {
         var now = Instant.now();
         var due = LocalDate.of(2025, 2, 7);
-        taskService.createTask("Do this", due);
-        assertThat(taskService.list(PageRequest.ofSize(1))).singleElement()
-                .matches(task -> task.getDescription().equals("Do this") && due.equals(task.getDueDate())
-                        && task.getCreationDate().isAfter(now));
+
+        taskService.createTask("My Task", "Do this", due);
+
+        assertThat(taskService.list(PageRequest.ofSize(1)))
+                .singleElement()
+                .matches(task -> task.getDescription().equals("Do this")
+                        && due.equals(task.getDueDate())
+                        && task.getCreationDate().isAfter(now)
+                        && task.getTitle().equals("My Task"));
     }
 
     @Test
     public void tasks_are_validated_before_they_are_stored() {
-        assertThatThrownBy(() -> taskService.createTask("X".repeat(Task.DESCRIPTION_MAX_LENGTH + 1), null))
+        String longDescription = "X".repeat(Task.DESCRIPTION_MAX_LENGTH + 1);
+
+        assertThatThrownBy(() -> taskService.createTask("Title", longDescription, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
